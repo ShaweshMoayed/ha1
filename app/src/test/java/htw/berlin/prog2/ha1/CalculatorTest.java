@@ -133,6 +133,7 @@ class CalculatorTest {
         assertEquals(expected, actual);    // Test schlägt fehl, weil C zu viel zurücksetzt
     }
 
+
     //Bug 2
 
     @Test
