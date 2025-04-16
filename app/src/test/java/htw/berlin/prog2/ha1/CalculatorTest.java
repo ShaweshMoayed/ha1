@@ -125,21 +125,33 @@ class CalculatorTest {
         calc.pressClearKey();              // Einmal C drücken sollte nur Bildschirm löschen und nicht die Rechenlogik
 
         calc.pressDigitKey(2);             // 2 eingeben
-        calc.pressEqualsKey();             // Erwartet: 6 + 2 = 8 (statt der ursprünglichen 6 + 4)
+        calc.pressEqualsKey();             // 6 + 2 = 8 (statt der ursprünglichen 6 + 4)
 
         String expected = "8";             // Erwartetes Ergebnis
         String actual = calc.readScreen(); // Tatsächliches Ergebnis
 
-        assertEquals(expected, actual);    // Test schlägt fehl, da C zu viel zurücksetzt
+        assertEquals(expected, actual);    // Test schlägt fehl, weil C zu viel zurücksetzt
     }
 
+    //Bug 2
 
+    @Test
+    @DisplayName("Mehrfaches Drücken der =-Taste sollte letzte Operation wiederholen")
+    void testRepeatedEqualsKey() {
+        Calculator calc = new Calculator(); // Taschenrechner starten
 
+        calc.pressDigitKey(5);             // 5 eingeben
+        calc.pressBinaryOperationKey("+"); // +
+        calc.pressDigitKey(7);             // 7 eingeben
+        calc.pressEqualsKey();             // 5 + 7 = 12
 
+        calc.pressEqualsKey();             // 12 + 7 = 19
 
+        String expected = "19";            // Erwartetes Ergebnis
+        String actual = calc.readScreen(); // Tatsächliches Ergebnis
 
-
-
+        assertEquals(expected, actual);    // Test schlägt fehl, weil Wiederholung der letzten Operation nicht klappt
+    }
 
 
 
