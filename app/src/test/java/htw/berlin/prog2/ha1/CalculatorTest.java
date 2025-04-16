@@ -94,7 +94,7 @@ class CalculatorTest {
 
     //Teilaufgabe 1
     @Test
-    @DisplayName("should convert number to percent correctly")
+    @DisplayName("sollte nummer zu Prozent umwandeln")
     void testPercentFunction() {
         Calculator calc = new Calculator();
 
@@ -107,6 +107,35 @@ class CalculatorTest {
 
         assertEquals(expected, actual);
     }
+
+    //Teilaufgabe 2
+
+
+    //Bug 1
+
+    @Test
+    @DisplayName("C-Taste darf beim ersten Drücken nicht Rechenoperation löschen")
+    void testClearKeyOnlyResetsScreenOnce() {
+        Calculator calc = new Calculator();
+
+        calc.pressDigitKey(6);             // 6 eingeben
+        calc.pressBinaryOperationKey("+"); // +
+        calc.pressDigitKey(4);             // 4 eingeben
+
+        calc.pressClearKey();              // Einmal C drücken sollte nur Bildschirm löschen und nicht die Rechenlogik
+
+        calc.pressDigitKey(2);             // 2 eingeben
+        calc.pressEqualsKey();             // Erwartet: 6 + 2 = 8 (statt der ursprünglichen 6 + 4)
+
+        String expected = "8";             // Erwartetes Ergebnis
+        String actual = calc.readScreen(); // Tatsächliches Ergebnis
+
+        assertEquals(expected, actual);    // Test schlägt fehl, da C zu viel zurücksetzt
+    }
+
+
+
+
 
 
 }
