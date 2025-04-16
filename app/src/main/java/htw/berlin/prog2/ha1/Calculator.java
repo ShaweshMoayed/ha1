@@ -14,6 +14,11 @@ public class Calculator {
 
     private String latestOperation = "";
 
+    private double lastOperand = 0.0;
+
+    private boolean justPressedEquals = false;
+
+
     /**
      * @return den aktuellen Bildschirminhalt als String
      */
@@ -70,10 +75,12 @@ public class Calculator {
      * auf dem Bildschirm angezeigt. Falls hierbei eine Division durch Null auftritt, wird "Error" angezeigt.
      * @param operation "+" für Addition, "-" für Substraktion, "x" für Multiplikation, "/" für Division
      */
-    public void pressBinaryOperationKey(String operation)  {
+    public void pressBinaryOperationKey(String operation) {
         latestValue = Double.parseDouble(screen);
         latestOperation = operation;
+        justPressedEquals = false; // Reset, weil neue Operation beginnt
     }
+
 
     /**
      * Empfängt den Wert einer gedrückten unären Operationstaste, also eine der drei Operationen
@@ -125,20 +132,55 @@ public class Calculator {
      * Wurde zuvor eine binäre Operationstaste gedrückt und zwei Operanden eingegeben, wird das
      * Ergebnis der Operation angezeigt. Falls hierbei eine Division durch Null auftritt, wird "Error" angezeigt.
      * Wird die Taste weitere Male gedrückt (ohne andere Tasten dazwischen), so wird die letzte
-     * Operation (ggf. inklusive letztem Operand) erneut auf den aktuellen Bildschirminhalt angewandt
-     * und das Ergebnis direkt angezeigt.
+     * Operation erneut ausgeführt, indem das aktuelle Ergebnis erneut mit dem letzten verwendeten
+     * zweiten Operand verrechnet wird (entsprechend dem Verhalten des Online Calculators).
+     * Beispiel: 5 + 7 = 12, weiteres = 12 + 7 = 19, usw.
      */
+
     public void pressEqualsKey() {
-        var result = switch(latestOperation) {
-            case "+" -> latestValue + Double.parseDouble(screen);
-            case "-" -> latestValue - Double.parseDouble(screen);
-            case "x" -> latestValue * Double.parseDouble(screen);
-            case "/" -> latestValue / Double.parseDouble(screen);
-            default -> throw new IllegalArgumentException();
-        };
+        double currentValue = Double.parseDouble(screen);
+
+        if (!justPressedEquals) {
+            // Erstes =: aktuellen Wert als letzten Operand merken
+            lastOperand = currentValue;
+        }
+
+        double result;
+
+        switch (latestOperation) {
+            case "+":
+                result = latestValue + lastOperand;
+                break;
+            case "-":
+                result = latestValue - lastOperand;
+                break;
+            case "x":
+                result = latestValue * lastOperand;
+                break;
+            case "/":
+                if (lastOperand == 0) {
+                    screen = "Error";
+                    return;
+                }
+                result = latestValue / lastOperand;
+                break;
+            default:
+                return; // keine gültige Operation, nichts tun
+        }
+
         screen = Double.toString(result);
-        if(screen.equals("Infinity")) screen = "Error";
-        if(screen.endsWith(".0")) screen = screen.substring(0,screen.length()-2);
-        if(screen.contains(".") && screen.length() > 11) screen = screen.substring(0, 10);
+
+        // Formatierung des Bildschirminhalts
+        if (screen.endsWith(".0")) {
+            screen = screen.substring(0, screen.length() - 2);
+        }
+        if (screen.contains(".") && screen.length() > 11) {
+            screen = screen.substring(0, 10);
+        }
+
+        latestValue = result;      // Ergebnis wird neuer erster Operand
+        justPressedEquals = true;  // Merken, dass = gedrückt wurde
     }
+
+
 }
