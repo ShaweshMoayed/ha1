@@ -92,6 +92,22 @@ class CalculatorTest {
     //TODO hier weitere Tests erstellen
 
 
+    //Teilaufgabe 1
+    @Test
+    @DisplayName("should convert number to percent correctly")
+    void testPercentFunction() {
+        Calculator calc = new Calculator();
+
+        calc.pressDigitKey(9); //Erste Ziffer
+        calc.pressDigitKey(8); //Zweite Ziffer
+        calc.pressUnaryOperationKey("%");
+
+        String expected = "0.98"; //Erwartetes Ergebnis
+        String actual = calc.readScreen();
+
+        assertEquals(expected, actual);
+    }
+
 
 }
 
